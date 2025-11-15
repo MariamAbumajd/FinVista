@@ -1,0 +1,111 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Waiting Queue</title>
+  <style>
+    body {
+      background-color: #1c7d82;
+      font-family: Arial, sans-serif;
+      color: #0d5c63;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+
+    h1 {
+      color: #ffffff;
+    }
+
+    ul#ticket-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+      width: 300px;
+    }
+
+    ul#ticket-list li {
+      background-color: #44a1a0;
+      color: white;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    #notification {
+      margin-top: 30px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #d84315;
+    }
+  </style>
+</head>
+<body>
+  <div id="statusMessage" style="font-size: 20px; margin-top: 20px;"></div>
+
+  <h1>🚶‍♂️ Waiting Queue</h1>
+  <ul id="ticket-list"></ul>
+  <div id="notification"></div>
+
+  <script>
+    let currentUsername = localStorage.getItem('username') || 'guest_user';
+    let tickets = [];
+    const list = document.getElementById('ticket-list');
+    const notify = document.getElementById('notification');
+
+    function fetchQueue() {
+      fetch('/api/queue')
+        .then(res => res.json())
+        .then(data => {
+          tickets = data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+          displayTickets();
+          // نبدأ المعالجة بعد تحميل التذاكر
+          startProcessingQueue();
+        })
+        .catch(err => {
+          console.error('Error fetching queue:', err);
+        });
+    }
+
+    function displayTickets() {
+      list.innerHTML = '';
+      tickets.forEach(ticket => {
+        const li = document.createElement('li');
+        li.textContent = `Ticket #${ticket.ticket_number}`;
+        list.appendChild(li);
+      });
+    }
+
+    function startProcessingQueue() {
+      const interval = setInterval(() => {
+        if (tickets.length === 0) {
+          clearInterval(interval);
+          window.location.href = "end.html";  // التوجيه إلى صفحة end.html عندما ينتهي الطابور
+          return;
+        }
+
+        const nextTicket = tickets[0];
+
+        if (nextTicket.username === currentUsername) {
+          setTimeout(() => {
+            tickets.shift();  // حذف التذكرة
+            displayTickets();
+            // يمكننا التوجيه لصفحة أخرى هنا
+            // window.location.href = "/service.html"; // أو أي صفحة ترغب بها
+          }, 5000);
+        } else {
+          tickets.shift();  // حذف أول تذكرة
+          displayTickets();
+        }
+
+      }, 2000); // كل 2 ثوانٍ
+    }
+
+    fetchQueue(); // تحميل أولي فقط
+  </script>
+
+</body>
+</html>

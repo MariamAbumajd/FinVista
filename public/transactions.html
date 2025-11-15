@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Transactions</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1c7d82;
+      color: white;
+      padding: 20px;
+      direction: ltr;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      color: #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #0d5c63;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #d1eeee;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>All Transactions</h2>
+
+  <table id="transactionsTable">
+    <thead>
+      <tr>
+        <th>Customer Name</th>
+        <th>Phone Number</th>
+        <th>Ticket Number</th>
+        <th>Service Type</th>
+               <th>TimeStamp</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    fetch('/api/queue/transactions') // تأكدي من المسار الصحيح
+    .then(response => response.json())
+    .then(data => {
+      const tableBody = document.querySelector("#transactionsTable tbody");
+      data.forEach(tx => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${tx.username}</td>
+          <td>${tx.phone}</td>
+          <td>${tx.ticket_number}</td>
+          <td>${tx.service_type}</td>
+          <td>${new Date(tx.timestamp).toLocaleString()}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    })
+    .catch(error => console.error("Error fetching transactions:", error));
+  </script>
+</body>
+</html>

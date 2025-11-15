@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Last 5 Transactions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f1f1f1;
+    }
+    .navbar {
+      background-color: #063f43;
+      padding: 15px;
+      color: white;
+      text-align: center;
+    }
+    .navbar a {
+      margin: 0 20px;
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      display: none; /* إخفاء باقي المحتوى */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar ثابتة لجميع الصفحات -->
+  <div class="navbar">
+    <a href="welcomepage.html">Home</a>
+    <a href="transactions.html">Customers List</a>
+    <a href="graph.html">Transactions Graph</a>
+  </div>
+<div id="currentTime" style="font-size: 18px; color: #0d5c63; font-weight: bold;"></div>
+
+  <!-- إخفاء باقي المحتوى -->
+  <div class="container">
+    <h2>Last 5 Transactions</h2>
+    <table id="transactionsTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Customer Name</th>
+          <th>Service</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- سيتم إدراج الصفوف هنا عبر JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+   // مثال لبيانات المعاملات (ممكن لاحقًا تجيبيها من API أو قاعدة بيانات)
+    const transactions = [
+      { name: "Ahmed Ali", service: "Withdraw", time: "10:00 AM" },
+      { name: "Sara Youssef", service: "Deposit", time: "10:15 AM" },
+      { name: "Mona Hassan", service: "Account Opening", time: "10:30 AM" },
+      { name: "Khaled Samir", service: "Loan Inquiry", time: "10:45 AM" },
+      { name: "Laila Adel", service: "Credit Card", time: "11:00 AM" }
+    ];
+
+    const tableBody = document.querySelector("#transactionsTable tbody");
+
+    transactions.forEach((t, index) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${t.name}</td>
+        <td>${t.service}</td>
+        <td>${t.time}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+    //for the timmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmme
+  function updateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    const dateString = now.toLocaleDateString();
+    document.getElementById("currentTime").innerText = `${dateString} - ${timeString}`;
+  }
+
+  // أول مرة
+  updateTime();
+  // كل ثانية
+  setInterval(updateTime, 1000);
+ 
+
+  </script>
+
+</body>
+</html>

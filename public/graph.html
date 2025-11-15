@@ -1,0 +1,77 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Transactions Graph</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #1c7d82; /* تعديل الخلفية */
+      display: flex;
+      justify-content: center; /* توسيط المحتوى أفقياً */
+      align-items: center; /* توسيط المحتوى عمودياً */
+      height: 100vh; /* جعل الصفحة تأخذ كامل ارتفاع الشاشة */
+    }
+    .container {
+      padding: 20px;
+      background-color: #fff; /* خلفية بيضاء حول الرسم البياني */
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 800px; /* تحديد أقصى عرض للصفحة */
+      text-align: center;
+    }
+    canvas {
+      width: 100% !important;
+      height: 400px !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 style="color: #063f43;">Transactions Graph</h2> <!-- تغيير اللون للعنوان -->
+    <canvas id="transactionsChart"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Fetch the transaction data for the graph
+    fetch('/api/queue/transactionStats')
+      .then(res => res.json())
+      .then(data => {
+        // Data for the graph: we will use the transaction count per service type
+        const serviceTypes = data.map(item => item.service_type);
+        const transactionCounts = data.map(item => item.count);
+
+        const ctx = document.getElementById('transactionsChart').getContext('2d');
+        const transactionsChart = new Chart(ctx, {
+          type: 'bar', // You can change this to 'line' for a line graph
+          data: {
+            labels: serviceTypes, // Service types as X-axis labels
+            datasets: [{
+              label: 'Number of Transactions',
+              data: transactionCounts, // The count of transactions for each service type
+              backgroundColor: '#44a1a0', // Bar color
+              borderColor: '#063f43', // Border color
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      })
+      .catch(err => {
+        console.error('Error fetching transaction stats:', err);
+      });
+  </script>
+</body>
+</html>

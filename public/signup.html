@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0d5c63;
+      font-family: 'Arial', sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .signup-container {
+      background-color: #44a1a0;
+      padding: 40px 30px;
+      border-radius: 15px;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      animation: fadeIn 1.5s ease;
+    }
+
+    .signup-container h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: 2px solid #0d5c63;
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: #fff;
+      color: #333;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #44a1a0;
+      outline: none;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #0d5c63;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #063f43;
+      transform: scale(1.05);
+    }
+
+    a {
+      margin-top: 25px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 500px) {
+      .signup-container {
+        padding: 20px;
+      }
+    }
+
+    #qrContainer img {
+      width: 200px;
+      margin-top: 15px;
+    }
+
+    #successMessage {
+      margin-top: 15px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="signup-container">
+    <h1>Create Account</h1>
+
+    <input type="text" id="newUsername" placeholder="Username" required>
+    <div id="usernameError" class="error-message"></div>
+
+    <input type="text" id="phone" placeholder="Phone Number" required>
+    <div id="phoneError" class="error-message"></div>
+
+    <input type="password" id="newPassword" placeholder="Password" required>
+    <div id="passwordError" class="error-message"></div>
+
+    <button onclick="signUp()">Create Account</button>
+
+    <div id="successMessage"></div>
+    <div id="qrContainer"></div>
+
+    <a href="login.html">Already have an account? Login</a>
+  </div>
+
+  <script>
+    function signUp() {
+      const username = document.getElementById("newUsername").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("newPassword").value;
+
+      // Clear previous errors
+      document.getElementById("usernameError").textContent = "";
+      document.getElementById("phoneError").textContent = "";
+      document.getElementById("passwordError").textContent = "";
+      document.getElementById("successMessage").textContent = "";
+      document.getElementById("qrContainer").innerHTML = "";
+
+      let hasError = false;
+
+      if (username.length === 0) {
+        document.getElementById("usernameError").textContent = "Username is required.";
+        hasError = true;
+      }
+
+      if (!/^\d{11}$/.test(phone)) {
+        document.getElementById("phoneError").textContent = "Phone number must be exactly 11 digits.";
+        hasError = true;
+      }
+
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
+        document.getElementById("passwordError").textContent =
+          "Password must be at least 8 characters with uppercase, lowercase, and a digit.";
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      const data = {
+        username: username,
+        phone: phone,
+        password: password
+      };
+
+      fetch("http://localhost:3000/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.qrImage) {
+          document.getElementById("successMessage").style.color = "lightgreen";
+          document.getElementById("successMessage").textContent =
+            "Account created successfully! Please keep your QR code for login.";
+          document.getElementById("qrContainer").innerHTML =
+            `<img src="${data.qrImage}" alt="QR Code">`;
+          setTimeout(() => {
+            window.location.href = "loginqr.html";
+          }, 5000);
+        } else {
+          document.getElementById("successMessage").style.color = "red";
+          document.getElementById("successMessage").textContent =
+            data.error || "Registration failed.";
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("successMessage").style.color = "red";
+        document.getElementById("successMessage").textContent = "Connection error.";
+      });
+    }
+  </script>
+
+</body>
+</html>

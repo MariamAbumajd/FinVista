@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome - FinVista Bank System</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0d5c63;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      display: flex;
+      width: 90%;
+      height: 90%;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      background-color: #44a1a0;
+    }
+
+    .image-side {
+      flex: 1;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .slide.active {
+      opacity: 1;
+    }
+
+    .welcome-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .welcome-side h1 {
+      font-size: 32px;
+      margin-bottom: 40px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 20px;
+      position: relative;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-toggle {
+      padding: 12px 24px;
+      background-color: #0d5c63;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .dropdown-toggle:hover {
+      background-color: #063f43;
+    }
+
+    .dropdown-icon {
+      margin-left: 10px;
+      font-size: 18px;
+      transition: transform 0.3s ease;
+    }
+
+    .dropdown-content {
+      display: none; /* Hide the dropdown by default */
+      position: absolute;
+      top: 110%;
+      left: 0;
+      width: 100%;
+      background-color: transparent;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dropdown-content button {
+      padding: 10px 20px;
+      background-color: #157178;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .dropdown-content button:hover {
+      background-color: #0d5c63;
+    }
+
+    .action-buttons .signup-btn {
+      padding: 12px 24px;
+      background-color: #0d5c63;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .action-buttons .signup-btn:hover {
+      background-color: #063f43;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .image-side {
+        height: 40%;
+      }
+
+      .welcome-side {
+        padding: 20px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .dropdown-content {
+        position: static;
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="image-side">
+      <div class="slide active" style="background-image: url('branch.png');"></div>
+      <div class="slide" style="background-image: url('atmm1.png');"></div>
+      <div class="slide" style="background-image: url('branch2.png');"></div>
+    </div>
+
+    <div class="welcome-side">
+      <h1>Welcome to FinVista Bank System</h1>
+      <div class="action-buttons">
+        <!-- Login Dropdown -->
+        <div class="dropdown">
+          <button class="dropdown-toggle" onclick="toggleDropdown()">
+            Login <span class="dropdown-icon">▼</span>
+          </button>
+          <div class="dropdown-content" id="dropdown-content">
+            <button onclick="location.href='loginqr.html'">Login as Customer</button>
+            <button onclick="location.href='employee-login.html'">Login as Employee</button>
+          </div>
+        </div>
+
+        <!-- Sign Up -->
+        <button class="signup-btn" onclick="location.href='signup.html'">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    let current = 0;
+
+    function showNextSlide() {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }
+
+    setInterval(showNextSlide, 4000);
+
+    function toggleDropdown() {
+      const dropdownContent = document.getElementById('dropdown-content');
+      const dropdownIcon = document.querySelector('.dropdown-icon');
+      
+      // Toggle the display of the dropdown
+      if (dropdownContent.style.display === 'flex') {
+        dropdownContent.style.display = 'none';
+        dropdownIcon.style.transform = 'rotate(0deg)'; // Reset the arrow to vertical
+      } else {
+        dropdownContent.style.display = 'flex';
+        dropdownIcon.style.transform = 'rotate(90deg)'; // Rotate the arrow to horizontal
+      }
+    }
+
+    // Close dropdown if clicked outside
+    window.addEventListener('click', function(event) {
+      const dropdownContent = document.getElementById('dropdown-content');
+      const dropdown = document.querySelector('.dropdown');
+      if (!dropdown.contains(event.target)) {
+        dropdownContent.style.display = 'none';
+        const dropdownIcon = document.querySelector('.dropdown-icon');
+        dropdownIcon.style.transform = 'rotate(0deg)';
+      }
+    });
+  </script>
+
+</body>
+</html>

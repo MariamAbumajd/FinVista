@@ -1,0 +1,88 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Employee Login</title>
+  <style>
+    body {
+      background-color: #0d5c63;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #44a1a0;
+      padding: 30px;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #0d5c63;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #063f43;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Employee Login</h2>
+    <input type="text" id="username" placeholder="Username" autocomplete="off">
+    <input type="password" id="password" placeholder="Password" autocomplete="off">
+    <button onclick="loginEmployee()">Login</button>
+    <p id="error" style="color: yellow;"></p>
+  </div>
+
+  <script>
+    // إفراغ الحقول عند تحميل الصفحة
+    window.onload = function() {
+      document.getElementById("username").value = '';
+      document.getElementById("password").value = '';
+    };
+
+    function loginEmployee() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      fetch("/auth/employee", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // حفظ جلسة الموظف لو عايزة
+          localStorage.setItem("employee", "true");
+          window.location.href = "topbar.html"; 
+        } else {
+          document.getElementById("error").textContent = "Invalid credentials.";
+        }
+      });
+    }
+  </script>
+</body>
+</html>

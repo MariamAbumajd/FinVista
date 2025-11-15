@@ -1,0 +1,270 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0d5c63;
+      font-family: 'Arial', sans-serif;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background-color: #44a1a0;
+      padding: 40px 30px;
+      border-radius: 15px;
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn 1.5s ease;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #0d5c63;
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: #fff;
+      color: #333;
+      box-sizing: border-box;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #44a1a0;
+      outline: none;
+    }
+
+    button {
+      padding: 12px;
+      background-color: #0d5c63;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    button:hover {
+      background-color: #063f43;
+      transform: scale(1.05);
+    }
+
+    .divider {
+      border-top: 1px solid #fff;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .divider::after {
+      content: 'OR';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #44a1a0;
+      padding: 0 10px;
+      color: #fff;
+    }
+
+    .info-box {
+      background-color: #fff;
+      color: #0d5c63;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    a {
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Login with QR Code</h1>
+    <input type="file" accept="image/*" id="qrFile">
+    <button onclick="scanQRCode()">Scan QR Code</button>
+
+    <div class="divider"></div>
+
+    <h1>Login with Username & Password</h1>
+    <input type="text" id="username" placeholder="Username" autocomplete="off">
+    <input type="password" id="password" placeholder="Password" autocomplete="off">
+    <button onclick="loginWithCredentials()">Login</button>
+
+    <a href="signup.html">Don't have an account? Sign Up</a>
+
+    <!-- عرض اسم العميل واختيار الخدمة -->
+    <div id="serviceSection" style="display: none;">
+      <h2 id="welcomeName"></h2>
+      <select id="serviceType">
+        <option value="">--Choose the service type--</option>
+        <option value="Withdrawal">Withdrawal</option>
+        <option value="Deposit">Deposit</option>
+        <option value="Change PIN">Change PIN</option>
+        <option value="Mini Statement">Mini Statement</option>
+        <option value="Balance Inquiry">Balance Inquiry</option>
+      </select>
+      <button onclick="confirmService()">Confirm Service</button>
+    </div>
+
+    <!-- عرض البيانات النهائية -->
+    <div id="finalInfo" class="info-box" style="display: none;">
+      <p><strong>Name:</strong> <span id="finalName"></span></p>
+      <p><strong>Ticket Number:</strong> <span id="ticketNumber"></span></p>
+      <p><strong>Service Type:</strong> <span id="finalService"></span></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <script>
+    let scannedUsername = "";
+
+    // إفراغ الحقول عند تحميل الصفحة
+    window.onload = function() {
+      // إفراغ الحقول باستخدام sessionStorage أو localStorage
+      localStorage.removeItem("username");
+      localStorage.removeItem("password");
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    };
+
+    function scanQRCode() {
+      const fileInput = document.getElementById('qrFile');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Please upload a QR code image.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          context.drawImage(img, 0, 0);
+          const qrCodeData = jsQR(context.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
+          if (qrCodeData) {
+            loginWithQRCode(qrCodeData.data);
+          } else {
+            alert('No QR code found.');
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function loginWithQRCode(qrData) {
+      fetch('/auth/scan-qr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ qrCode: qrData })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Invalid QR code");
+        return response.json();
+      })
+      .then(data => {
+        scannedUsername = data.username;
+        document.getElementById('welcomeName').textContent = "Welcome, " + data.username;
+        document.getElementById('serviceSection').style.display = 'block';
+      })
+      .catch(error => {
+        alert('Login failed: ' + error.message);
+      });
+    }
+
+    function confirmService() {
+      const service = document.getElementById('serviceType').value;
+      if (!service) {
+        alert("Please select a service.");
+        return;
+      }
+
+      const ticket = Math.floor(1000 + Math.random() * 9000); // رقم تذكرة عشوائي
+
+      document.getElementById('finalName').textContent = scannedUsername;
+      document.getElementById('ticketNumber').textContent = ticket;
+      document.getElementById('finalService').textContent = service;
+
+      document.getElementById('finalInfo').style.display = 'block';
+
+      fetch('/api/queue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: scannedUsername, ticket_number: ticket, service_type: service })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Ticket saved:', data);
+      })
+      .catch(error => {
+        console.error('Error saving ticket:', error);
+      });
+
+      setTimeout(() => {
+        window.location.href = "waiting.html";
+      }, 4000);
+    }
+
+    function loginWithCredentials() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      if (!username || !password) {
+        alert('Please enter both username and password.');
+        return;
+      }
+      fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Invalid username or password');
+        }
+        return response.json();
+      })
+      .then(data => {
+        alert('Welcome, ' + data.username);
+        window.location.href = "waiting.html"; 
+      })
+      .catch(error => {
+        alert('Invalid username or password. Please try again.');
+      });
+    }
+  </script>
+</body>
+</html>
