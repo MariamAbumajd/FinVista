@@ -50,12 +50,15 @@ Multiple authentication methods (QR/Password) for customers.
 ## ScreenShots
 
 |Home Page|
+| :---: |
 |<img width="500" alt="image" src="https://github.com/user-attachments/assets/10ef06fa-e459-48f5-aa30-569439b704d9" />|
 
 | Admin's Screens|
+| :---: |
 |<img width="500"  alt="image" src="https://github.com/user-attachments/assets/9282909a-2b18-4351-a74a-330c29f9bb51" />|<img width="500"  alt="image" src="https://github.com/user-attachments/assets/9bd419a6-49a3-45a3-95ac-89830766014b" />|
 
 | Customer's Screens |
+| :---: |
 |<img width="500"  alt="image" src="https://github.com/user-attachments/assets/db935456-4bd1-48b6-b7be-867a2e593ecd" />|<img width="500"  alt="image" src="https://github.com/user-attachments/assets/603ea5e2-f970-49e3-8138-bf42dfc3e42a" />|<img width="500" alt="image" src="https://github.com/user-attachments/assets/8c04a8a4-a758-431d-a46d-70a1a8335399" />|<img width="500"  alt="image" src="https://github.com/user-attachments/assets/b9cb8f2a-9537-4b0e-bcc3-553e07ca0542" />|<img width="500"   alt="image" src="https://github.com/user-attachments/assets/d3c88b42-8c98-48f6-b47d-035aa7d05db4" />|<img width="500"   alt="image" src="https://github.com/user-attachments/assets/41c2e3bc-8ab0-4a60-9e7e-c888bc6bb143" />|
 
 
